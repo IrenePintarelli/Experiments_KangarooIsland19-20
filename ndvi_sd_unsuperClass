@@ -1,0 +1,143 @@
+# install the packages you will need for your analysis
+
+install.packages("raster")
+install.packages("RStoolbox")
+install.packages("ggplot2")
+install.packages("gridExtra")
+install.packages("patchwork")
+
+
+# load the packages after their installation
+library(raster)
+library(RStoolbox)
+library(ggplot2)
+library(gridExtra)
+library(patchwork)
+
+# set the working dierctory (where to find images and info to load)
+setwd("C:/Experiment/")
+
+# load the images. In this case, I've got two images one before and th eother one after the bushfires occured on Kangaroo Island between the winter 2019 - 2020.
+October19 <- brick("October2019.KI.jpg")
+January20 <- brick("January2020KI.jpg")
+
+# visualize th einfos contained in the picture, in order to understand the structure
+October19
+January20
+# as I've downloaded the images from website Copernicus, already elaborated https://browser.dataspace.copernicus.eu/?zoom=10&lat=-35.83619&lng=137.2522&themeId=DEFAULT-THEME&visualizationUrl=U2FsdGVkX1%2B6%2FVTTt5h1gpPKSopDDQD0UzCL5zLKSiNVpzqaqIkLt49XMuQ%2BP6isgUgorX6TcL1puWQIWyxbbXouR3erg%2FpLasQb6hCEbCBlSJh7L%2B34BueoB%2F7eF5e7&datasetId=S2_L2A_CDAS&fromTime=2020-01-30T00%3A00%3A00.000Z&toTime=2020-01-30T23%3A59%3A59.999Z&layerId=1_TRUE_COLOR&demSource3D=%22MAPZEN%22&cloudCoverage=30&dateMode=SINGLE
+they contained 3 layers.
+# 1 = NIR
+# 2 = RED
+# 3 = GREEN
+
+OCT19 <- ggRGB(October19,1,2,3,stretch="lin")
+OCT19
+
+JAN20 <- ggRGB(January20,1,2,3,stretch="lin")
+JAN20
+
+# I visualize the images together to see the differences (+ one next to the other, / one under the other)
+OCT19/JAN20
+
+# the function names allows me to find out the names of the layers
+names(October19)
+names(January20)
+
+# in this way I can analysis ndvi = The Normalized Difference Vegetation Index (NDVI) is a standard remote-sensing metric used to quantify the health and density of vegetation
+nir2019 <- October19$October2019.KI_1
+red2019 <- October19$October2019.KI_2
+green2019 <- October19$October2019.KI_3
+
+ndvi2019 <- (nir2019-red2019)/(nir2019+red2019)
+
+nir2020 <- January20$January2020KI_1
+red2020 <- January20$January2020KI_2
+
+ndvi2020 <- (nir2020-red2020)/(nir2020+red2020)
+
+# Visualize the images created together, showing the different ndvi in 2019 and in 2020
+par(mfrow=c(2,1))
+plot(ndvi2019)
+plot(ndvi2020)
+
+# If I wanna change the colours for a better visualization
+cl <- colorRampPalette(c("black","white","red","magenta","green"))(100)
+plot(ndvi2019,col=cl)
+plot(ndvi2020,col=cl)
+
+par(mfrow=c(2,2))
+plotRGB(October19,1,2,3)
+plotRGB(January20,1,2,3)
+plot(ndvi2019)
+plot(ndvi2020)
+
+# Standard Deviation = a statistical measure of how spread out the values in a dataset are from the average (mean). It tells you, on average, how far each individual data point deviates from the mean. 
+
+# I could need to calculate the Standard deviation for different variables: ndvi, nir band…
+# I choose a matrix of 7x7 in this case
+ndvisd_2019.7 <- focal(ndvi2019, w=matrix(1/49, nrow=7, ncol=7), fun=sd)
+ndvisd_2020.7 <- focal(ndvi2020, w=matrix(1/49, nrow=7, ncol=7), fun=sd)
+
+# visualize together
+par(mfrow=c(2,1))
+plot(ndvisd_2019.7)
+plot(ndvisd_2020.7)
+
+# PCA needed for multivariate analysis. It allows me to understand how many infos are contained in the different layers. It can be usefull to know which one I should select for my analysis
+October19.pca <- rasterPCA(October19)
+October19.pca
+summary(October19.pca$model)
+plot(October19.pca$map)
+
+January20.pca <- rasterPCA(January20)
+January20.pca
+summary(January20.pca$model)
+plot(January20.pca$map)
+
+# in this case, I could calculate sd even for PC1, so only for the first layer
+# I can plot PC1 of the two images together to see the differnces
+plot(October19.pca$map$PC1)
+plot(January20.pca$map$PC1)
+
+# let's see how the percentages in the land cover have changed 
+# first I calculate considering 3 classes: 1 for the ocean, one for the vegetation, one for the rest
+October19.cl <- unsuperClass(October19, nClasses=3)
+par(mfrow=c(2,1))
+plotRGB(October19)
+plot(October19.cl$map)
+# I plot them together, so that I can see which colour corresonds to which type of land cover
+1 blue = forest
+2 aquamarine = agricultural land
+3 yellow = ocean
+# calculate the frequences of the pixels
+freq(October19.cl$map)
+  layer value  count
+1     1     1 214135
+2     1     2 129661
+3     1     3 265450
+# I'm interested in the land cover variation on the island before and after the bushfire, so I sum the pixels regarding the island (blue+aquamarine)
+island19 <- 214135 + 129661
+Forest19 <- 214135
+# calculate the percentage
+percentFo.2019 <- Forest/island*100
+percentFo.2019
+62.28548
+
+# I do the same for January 2020
+par(mfrow=c(2,1))
+plotRGB(January20)
+plot(January20.cl$map)
+1 blue = ocean
+2 aquamarine = forest (even burnt)
+3 yellow = agricultural land
+freq(January20.cl$map)
+  layer value  count
+1     1     1 275965
+2     1     2 182121
+3     1     3 157676
+island20 <- 182121 + 157676
+Forest20 <- 182121
+percentFo.2020 <- Forest20/island20*100
+percentFo.2020
+53.597
+
