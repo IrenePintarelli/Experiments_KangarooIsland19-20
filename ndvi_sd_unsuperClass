@@ -60,6 +60,10 @@ par(mfrow=c(2,1))
 plot(ndvi2019)
 plot(ndvi2020)
 
+# calculate the differneces between the two
+diff_ndvi <- ndvi2020 - ndvi2019
+plot(diff_ndvi,main="Differences NDVI 2020 vs 2019")
+
 # If I wanna change the colours for a better visualization
 cl <- colorRampPalette(c("black","white","red","magenta","green"))(100)
 plot(ndvi2019,col=cl)
