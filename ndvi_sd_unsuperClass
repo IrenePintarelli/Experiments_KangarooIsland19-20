@@ -65,11 +65,14 @@ cl <- colorRampPalette(c("black","white","red","magenta","green"))(100)
 plot(ndvi2019,col=cl)
 plot(ndvi2020,col=cl)
 
+# create a pdf comoaring real images and ndvi
+pdf("Island 2019 vs 2020 ndvi", width=8, height=6)
 par(mfrow=c(2,2))
 plotRGB(October19,1,2,3)
 plotRGB(January20,1,2,3)
 plot(ndvi2019)
 plot(ndvi2020)
+dev.off()
 
 # Standard Deviation = a statistical measure of how spread out the values in a dataset are from the average (mean). It tells you, on average, how far each individual data point deviates from the mean. 
 
