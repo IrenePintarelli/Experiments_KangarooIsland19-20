@@ -24,7 +24,7 @@ January20 <- brick("January2020KI.jpg")
 # visualize th einfos contained in the picture, in order to understand the structure
 October19
 January20
-# as I've downloaded the images from website Copernicus, already elaborated https://browser.dataspace.copernicus.eu/?zoom=10&lat=-35.83619&lng=137.2522&themeId=DEFAULT-THEME&visualizationUrl=U2FsdGVkX1%2B6%2FVTTt5h1gpPKSopDDQD0UzCL5zLKSiNVpzqaqIkLt49XMuQ%2BP6isgUgorX6TcL1puWQIWyxbbXouR3erg%2FpLasQb6hCEbCBlSJh7L%2B34BueoB%2F7eF5e7&datasetId=S2_L2A_CDAS&fromTime=2020-01-30T00%3A00%3A00.000Z&toTime=2020-01-30T23%3A59%3A59.999Z&layerId=1_TRUE_COLOR&demSource3D=%22MAPZEN%22&cloudCoverage=30&dateMode=SINGLE
+# as I've downloaded the images from website Copernicus (NB. Dowload the correct bands "False color"), already elaborated https://browser.dataspace.copernicus.eu/?zoom=10&lat=-35.83619&lng=137.2522&themeId=DEFAULT-THEME&visualizationUrl=U2FsdGVkX1%2B6%2FVTTt5h1gpPKSopDDQD0UzCL5zLKSiNVpzqaqIkLt49XMuQ%2BP6isgUgorX6TcL1puWQIWyxbbXouR3erg%2FpLasQb6hCEbCBlSJh7L%2B34BueoB%2F7eF5e7&datasetId=S2_L2A_CDAS&fromTime=2020-01-30T00%3A00%3A00.000Z&toTime=2020-01-30T23%3A59%3A59.999Z&layerId=1_TRUE_COLOR&demSource3D=%22MAPZEN%22&cloudCoverage=30&dateMode=SINGLE
 they contained 3 layers.
 # 1 = NIR
 # 2 = RED
